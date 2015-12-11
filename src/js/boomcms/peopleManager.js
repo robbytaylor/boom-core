@@ -64,7 +64,7 @@ $.widget('boom.peopleManager', {
 	},
 
 	addPerson : function() {
-		var person = new boomPerson();
+		var person = new Person();
 
 		person.add()
 			.done(function() {
@@ -87,7 +87,7 @@ $.widget('boom.peopleManager', {
 
 	currentPersonAddGroups : function() {
 		var person_id = this.getCurrentPersonId(),
-			person = new boomPerson(person_id),
+			person = new Person(person_id),
 			peopleManager = this,
 			$group_list = this.element.find('#b-person-groups-list');
 
@@ -109,7 +109,7 @@ $.widget('boom.peopleManager', {
 
 	currentPersonDelete : function() {
 		var person_id = this.getCurrentPersonId(),
-			person = new boomPerson(person_id),
+			person = new Person(person_id),
 			peopleManager = this;
 
 		person.delete()
@@ -124,7 +124,7 @@ $.widget('boom.peopleManager', {
 
 	currentPersonRemoveGroup : function($group) {
 		var person_id = this.getCurrentPersonId(),
-			person = new boomPerson(person_id),
+			person = new Person(person_id),
 			peopleManager = this,
 			group_id = $group.data('group-id');
 
@@ -137,7 +137,7 @@ $.widget('boom.peopleManager', {
 
 	currentPersonSave : function() {
 		var person_id = this.getCurrentPersonId(),
-			person = new boomPerson(person_id),
+			person = new Person(person_id),
 			peopleManager = this;
 
 		person.save(this.element.find('.b-person-view form').serialize())
@@ -148,7 +148,7 @@ $.widget('boom.peopleManager', {
 
 	deleteSelectedPeople : function() {
 		var selected = this.getSelectedPeople(),
-			person = new boomPerson(selected.join('-')),
+			person = new Person(selected.join('-')),
 			peopleManager = this,
 			confirmation = new boomConfirmation('Confirm deletion', 'Are you sure you want to remove the selected people?');
 

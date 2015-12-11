@@ -125,6 +125,32 @@ module.exports = function(grunt) {
 				dest: 'public/js/cms.js'
 			}
 		},
+		typescript: {
+			base: {
+				src: ['src/js/boomcms/*.ts'],
+				dest: 'src/js/boomcms/',
+				options: {
+					module: 'commonjs',
+					target: 'es5',
+					sourceMap: true,
+					declaration: true,
+					definitions: [
+						'typings/jquery/jquery.d.ts',
+						'src/js/boomcms/boomcms.d.ts'
+					]
+				}
+			}
+		},
+		transpile: {
+			main: {
+	      			type: "cjs", // or "amd" or "yui"
+	      			files: [{
+		        		expand: true,
+		        		src: ['public/js/main.js'],
+		        		dest: 'public/js/main.js'
+	      			}]
+			}
+	  	},
 		uglify: {
 			options: {
 				banner: '/*! <%= pkg.name %> - v<%= pkg.version %> (<%= grunt.template.today("yyyy-mm-dd") %>) */\n',
@@ -193,9 +219,11 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
 	grunt.loadNpmTasks('grunt-autoprefixer');
 	grunt.loadNpmTasks('grunt-contrib-copy');
+	grunt.loadNpmTasks('grunt-typescript');
+	grunt.loadNpmTasks('grunt-es6-module-transpiler');
 
 	grunt.registerTask('build-css', ['less', 'autoprefixer:no_dest', 'cssmin']);
-	grunt.registerTask('build-js', ['concat:dist', 'uglify']);
+	grunt.registerTask('build-js', ['typescript', 'concat:dist', 'uglify', 'transpile']);
 	grunt.registerTask('dist', ['copy', 'build-css', 'build-js']);
 	grunt.registerTask('default',['watch']);
 };

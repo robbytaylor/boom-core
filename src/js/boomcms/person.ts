@@ -1,15 +1,15 @@
-function boomPerson(person_id) {
-	this.id = person_id;
+export class Person {
+	constructor(private id: number) {}
 
-	boomPerson.prototype.base_url = '/cms/person/';
+	private baseUrl: string = '/cms/person';
 
-	boomPerson.prototype.add = function() {
+	add() {
 		var deferred = new $.Deferred(),
 			person = this,
 			dialog;
 
 		dialog = new boomDialog({
-			url : this.base_url + 'add',
+			url : this.baseUrl + 'add',
 			width: '600px',
 			title : 'Create new person',
 			closeButton: false,
@@ -28,10 +28,10 @@ function boomPerson(person_id) {
 		});
 
 		return deferred;
-	};
+	}
 
-	boomPerson.prototype.addGroups = function() {
-		var url = this.base_url + 'add_group/' + this.id,
+	addGroups() {
+		var url = this.baseUrl + 'add_group/' + this.id,
 			deferred = new $.Deferred(),
 			dialog;
 
@@ -62,20 +62,20 @@ function boomPerson(person_id) {
 		});
 
 		return deferred;
-	};
+	}
 
-	boomPerson.prototype.addWithData = function(data) {
-		return $.post(this.base_url + 'add', data);
-	};
+	addWithData(data) {
+		return $.post(this.baseUrl + 'add', data);
+	}
 
-	boomPerson.prototype.delete = function() {
+	delete() {
 		var deferred = new $.Deferred(),
 			person = this,
 			confirmation = new boomConfirmation('Please confirm', 'Are you sure you want to delete this person?');
 
 			confirmation
 				.done(function() {
-					$.post(person.base_url + 'delete', {
+					$.post(person.baseUrl + 'delete', {
 						people : [person.id]
 					})
 					.done(function() {
@@ -84,17 +84,17 @@ function boomPerson(person_id) {
 				});
 
 		return deferred;
-	};
+	}
 
-	boomPerson.prototype.deleteMultiple = function(people_ids) {
-		return $.post(this.base_url + 'delete', {'people[]' : people_ids});
-	};
+	deleteMultiple(ids) {
+		return $.post(this.baseUrl + 'delete', {'people[]': ids});
+	}
 
-	boomPerson.prototype.removeGroup = function(group_id) {
-		return $.post(this.base_url + 'remove_group/' + this.id, {group_id: group_id});
-	};
+	removeGroup(groupId) {
+		return $.post(this.baseUrl + 'remove_group/' + this.id, {group_id: groupId});
+	}
 
-	boomPerson.prototype.save = function(data) {
-		return $.post(this.base_url + 'save/' + this.id, data);
-	};
-};
+	save(data) {
+		return $.post(this.baseUrl + 'save/' + this.id, data);
+	}
+}
