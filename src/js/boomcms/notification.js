@@ -21,19 +21,19 @@ function boomNotification(message) {
 			waitingApproval = true;
 
 			Notification.requestPermission(function (permission) {
-				var n;
-
 				waitingApproval = false;
 
 				if (permission === "granted") {
-					n = new Notification(message);
+					var n = new Notification('BoomCMS', {
+						body: message,
+						icon: '/vendor/boomcms/boom-core/img/logo-sq.png',
+						requireInteraction: false
+					});
+
 					notified = true;
 	
-					$.boom.notifications.push(n);
-
 					setTimeout(function() {
 						n.close();
-						$.boom.notifications.splice($.boom.notifications.indexOf(n), -1);
 					}, 3000);
 				}
 			});

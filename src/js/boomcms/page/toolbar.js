@@ -92,7 +92,7 @@ $.widget( 'boom.pageToolbar', {
 				},
 				draftsSave: function(event, data) {
 					if (data.action === 'revert') {
-						$.boom.reload();
+						top.location.reload();
 					} else {
 						toolbar.status.set(data.status);
 					}
@@ -129,7 +129,7 @@ $.widget( 'boom.pageToolbar', {
 
 					new boomConfirmation('Reload page?', "Do you want to reload the page to view the new template?")
 						.done(function() {
-							$.boom.reload();
+							top.location.reload();
 						});
 				},
 				visibilitySave: function(event, response) {
@@ -145,9 +145,10 @@ $.widget( 'boom.pageToolbar', {
 				},
 				urlsSave: function(event, primaryUrl) {
 					var history = new boomHistory();
+
 					history.replaceState({},
 						top.window.document.title,
-						'/' + primaryUrl
+						'/' + ((primaryUrl === '/') ? '' : primaryUrl)
 					);
 				},
 				deleteSave: function(event, response) {

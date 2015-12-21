@@ -5,6 +5,7 @@ namespace BoomCMS\Tests\Database\Models;
 use BoomCMS\Core\Chunk\Text;
 use BoomCMS\Database\Models\Asset;
 use BoomCMS\Database\Models\Page;
+use BoomCMS\Database\Models\URL;
 use BoomCMS\Support\Facades\Chunk;
 use Illuminate\Database\Eloquent\Builder;
 use Mockery as m;
@@ -101,6 +102,21 @@ class PageTest extends AbstractModelTestCase
     {
         $page = new Page([Page::ATTR_DESCRIPTION => '<p>description</p>']);
         $this->assertEquals('description', $page->getDescription());
+    }
+
+    public function testIsDeleted()
+    {
+        $values = [
+            0      => false,
+            null   => false,
+            time() => true,
+        ];
+
+        foreach ($values as $deletedAt => $isDeleted) {
+            $page = new Page(['deleted_at' => $deletedAt]);
+
+            $this->assertEquals($isDeleted, $page->isDeleted());
+        }
     }
 
     public function testSetAndGetChildOrderingPolicy()
@@ -215,5 +231,21 @@ class PageTest extends AbstractModelTestCase
 
         $this->assertEquals($page, $page->setSequence(2));
         $this->assertEquals(2, $page->getManualOrderPosition());
+    }
+
+    public function testUrlReturnsNullIfNoPrimaryUri()
+    {
+        $page = new Page();
+
+        $this->assertNull($page->url());
+    }
+
+    public function testUrlReturnsUrlObject()
+    {
+        $page = new Page([Page::ATTR_PRIMARY_URI => 'test']);
+        $url = $page->url();
+
+        $this->assertInstanceOf(URL::class, $url);
+        $this->assertEquals('test', $url->getLocation());
     }
 }

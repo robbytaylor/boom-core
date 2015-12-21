@@ -15,7 +15,7 @@ $.widget('boom.assetManager', {
 		this.postData[type] = value;
 	},
 
-	assetsUploaded : function(assetIds) {
+	assetsUploaded : function() {
 		var assetManager = this;
 
 		assetManager.getAssets();
@@ -151,11 +151,9 @@ $.widget('boom.assetManager', {
 
 		return $.post(this.listUrl, this.postData)
 			.done(function(response) {
-				var $thumbs = $(response.html);
-
 				assetManager.element
-					.find('#b-assets-content')
-					.html($thumbs);
+					.find('#b-assets-view-thumbs')
+					.replaceWith(response.html);
 
 				assetManager.element
 					.find('#b-assets-view-thumbs')
@@ -197,7 +195,8 @@ $.widget('boom.assetManager', {
 	removeFilters : function() {
 		this.postData = {
 			page: 1,
-			limit: 30
+			limit: 30,
+			order: 'last_modified desc'
 		};
 
 		this.element.find('#b-assets-types').val(0);
