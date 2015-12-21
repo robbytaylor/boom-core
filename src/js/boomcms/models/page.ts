@@ -1,12 +1,9 @@
-	/**
-* @class
-* @name boomPage
-*/
-function boomPage(page_id) {
-	this.id = page_id;
+export class Page() {
 	this.baseUrl = '/cms/page/';
+	
+	constructor(private id: number) {}
 
-	boomPage.prototype.add = function() {
+	add() {
 		var promise = new $.Deferred(),
 			page_id = this.id;
 
@@ -17,24 +14,24 @@ function boomPage(page_id) {
 		return promise;
 	};
 
-	boomPage.prototype.addRelatedPage = function(page_id) {
+	addRelatedPage(pageId: number) {
 		return $.post(this.baseUrl + 'relations/add/' + this.id, {
-			related_page_id: page_id
+			related_page_id: pageId
 		});
 	};
 
-	boomPage.prototype.addTag = function(group, tag) {
+	addTag(group: string, tag: string) {
 		return $.post(this.baseUrl + 'tags/add/' + this.id, {
 			group : group,
 			tag : tag
 		});
 	};
 
-	boomPage.prototype.delete = function(options) {
+	delete(options: object) {
 		return $.post(this.baseUrl + 'settings/delete/' + this.id, options);
 	};
 
-	boomPage.prototype.embargo = function() {
+	embargo() {
 		var page = this,
 			url = this.baseUrl + 'version/embargo/' + this.id,
 			promise = new $.Deferred(),
@@ -53,9 +50,9 @@ function boomPage(page_id) {
 		});
 
 		return promise;
-	},
+	};
 
-	boomPage.prototype.publish = function() {
+	publish() {
 		var promise = new $.Deferred();
 
 		$.post(this.baseUrl + 'version/embargo/' + this.id)
@@ -66,25 +63,25 @@ function boomPage(page_id) {
 		return promise;
 	};
 
-	boomPage.prototype.requestApproval = function() {
+	requestApproval() {
 		var url = this.baseUrl + 'version/request_approval/' + this.id;
 
 		return $.post(url);
 	};
 
-	boomPage.prototype.removeRelatedPage = function(page_id) {
+	removeRelatedPage(pageId: number) {
 		return $.post(this.baseUrl + 'relations/remove/' + this.id, {
 			related_page_id: page_id
 		});
 	};
 
-	boomPage.prototype.removeTag = function(tagId) {
+	removeTag(tagId: number) {
 		return $.post(this.baseUrl + 'tags/remove/' + this.id, {
 			tag : tagId
 		});
 	};
 
-	boomPage.prototype.revertToPublished = function() {
+	revertToPublished() {
 		var	promise = new $.Deferred(),
 			page = this;
 
@@ -99,23 +96,23 @@ function boomPage(page_id) {
 		return promise;
 	};
 
-	boomPage.prototype.saveSettings = function(section, data) {
+	saveSettings(section: string, data: object) {
 		return $.post(this.baseUrl + 'settings/' + section + '/' + this.id, data);
 	};
 
-	boomPage.prototype.setFeatureImage = function(asset) {
+	setFeatureImage(asset) {
 		return $.post(this.baseUrl + 'settings/feature/' + this.id, {
 			feature_image_id : asset.getId()
 		});
 	};
 
-	boomPage.prototype.setTitle = function(title) {
+	setTitle = function(title: string) {
 		return $.post(this.baseUrl + 'version/title/' + this.id, {
 			title : title
 		});
 	};
 
-	boomPage.prototype.setTemplate = function(templateId) {
+	setTemplate(templateId: number) {
 		return $.post(this.baseUrl + 'version/template/' + this.id, {
 			template_id: templateId
 		});
