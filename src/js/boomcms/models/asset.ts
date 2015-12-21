@@ -1,15 +1,15 @@
-function boomAsset(assetId) {
-	this.id = assetId;
+export class Asset() {
+	constructor(private id: number) {}
 	
-	boomAsset.prototype.getId = function() {
+	getId() {
 		return this.id;
 	};
 
-	boomAsset.prototype.getEmbedCode = function() {
+	getEmbedCode() {
 		return $.get(this.getUrl('embed'));
 	};
 	
-	boomAsset.prototype.getUrl = function(action, width, height) {
+	getUrl(action: string, width: number, height: number) {
 		var url = '/asset/' + this.getId();
 
 		if ((!action || action === 'view') && !(width || height)) {
