@@ -1,7 +1,9 @@
-export class Group(group_id) {
-	constructor(private id: number) {}
+export class Group {
+	private base_url: string = '/cms/group';
 
-	boomGroup.prototype.base_url = '/cms/group/';
+	constructor(private id: number) {
+		this.id = id;
+	}
 
 	add() {
 		var group = this,
@@ -22,7 +24,7 @@ export class Group(group_id) {
 		});
 
 		return deferred;
-	};
+	}
 
 	addRole(role_id: number, allowed: boolean, page_id: number) {
 		var deferred = new $.Deferred(),
@@ -41,15 +43,15 @@ export class Group(group_id) {
 			});
 
 		return deferred;
-	};
+	}
 
 	addWithName(name: string) {
 		return $.post(this.base_url + 'add', {name: name});
-	};
+	}
 
 	getRoles(page_id: number) {
-		return $.getJSON(this.base_url + 'list_roles/' + this.id + '?page_id=' + page_id);
-	};
+		return $.get(this.base_url + 'list_roles/' + this.id + '?page_id=' + page_id);
+	}
 
 	remove() {
 		var group = this,
@@ -65,16 +67,16 @@ export class Group(group_id) {
 			});
 
 		return deferred;
-	};
+	}
 
 	removeRole(role_id: number, page_id: number) {
 		return $.post(this.base_url + 'remove_role/' + this.id, {
 			role_id : role_id,
 			page_id : page_id
 		});
-	},
+	}
 
-	save(data: object) {
+	save(data: Object) {
 		return $.post(this.base_url + 'save/' + this.id, data);
-	};
+	}
 };

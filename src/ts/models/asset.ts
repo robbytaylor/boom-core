@@ -1,14 +1,16 @@
-export class Asset() {
-	constructor(private id: number) {}
-	
+export class Asset {
+	constructor(private id: number) {
+		this.id = id;
+	}
+
 	getId() {
 		return this.id;
-	};
+	}
 
 	getEmbedCode() {
 		return $.get(this.getUrl('embed'));
-	};
-	
+	}
+
 	getUrl(action: string, width: number, height: number) {
 		var url = '/asset/' + this.getId();
 
@@ -27,5 +29,5 @@ export class Asset() {
 		}
 
 		return url;
-	};
+	}
 };

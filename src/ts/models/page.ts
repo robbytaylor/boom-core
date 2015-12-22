@@ -1,7 +1,11 @@
-export class Page() {
-	this.baseUrl = '/cms/page/';
-	
-	constructor(private id: number) {}
+import {Asset} from './asset';
+
+export class Page {
+	private baseUrl: string = '/cms/page/';
+
+	constructor(private id: number) {
+		this.id = id;
+	}
 
 	add() {
 		var promise = new $.Deferred(),
@@ -12,24 +16,24 @@ export class Page() {
 		});
 
 		return promise;
-	};
+	}
 
 	addRelatedPage(pageId: number) {
 		return $.post(this.baseUrl + 'relations/add/' + this.id, {
 			related_page_id: pageId
 		});
-	};
+	}
 
 	addTag(group: string, tag: string) {
 		return $.post(this.baseUrl + 'tags/add/' + this.id, {
 			group : group,
 			tag : tag
 		});
-	};
+	}
 
-	delete(options: object) {
+	delete(options: Object) {
 		return $.post(this.baseUrl + 'settings/delete/' + this.id, options);
-	};
+	}
 
 	embargo() {
 		var page = this,
@@ -50,7 +54,7 @@ export class Page() {
 		});
 
 		return promise;
-	};
+	}
 
 	publish() {
 		var promise = new $.Deferred();
@@ -61,25 +65,25 @@ export class Page() {
 			});
 
 		return promise;
-	};
+	}
 
 	requestApproval() {
 		var url = this.baseUrl + 'version/request_approval/' + this.id;
 
 		return $.post(url);
-	};
+	}
 
 	removeRelatedPage(pageId: number) {
 		return $.post(this.baseUrl + 'relations/remove/' + this.id, {
 			related_page_id: page_id
 		});
-	};
+	}
 
 	removeTag(tagId: number) {
 		return $.post(this.baseUrl + 'tags/remove/' + this.id, {
 			tag : tagId
 		});
-	};
+	}
 
 	revertToPublished() {
 		var	promise = new $.Deferred(),
@@ -94,27 +98,27 @@ export class Page() {
 			});
 
 		return promise;
-	};
+	}
 
-	saveSettings(section: string, data: object) {
+	saveSettings(section: string, data: Object) {
 		return $.post(this.baseUrl + 'settings/' + section + '/' + this.id, data);
-	};
+	}
 
-	setFeatureImage(asset) {
+	setFeatureImage(asset: Asset) {
 		return $.post(this.baseUrl + 'settings/feature/' + this.id, {
 			feature_image_id : asset.getId()
 		});
-	};
+	}
 
-	setTitle = function(title: string) {
+	setTitle(title: string) {
 		return $.post(this.baseUrl + 'version/title/' + this.id, {
 			title : title
 		});
-	};
+	}
 
 	setTemplate(templateId: number) {
 		return $.post(this.baseUrl + 'version/template/' + this.id, {
 			template_id: templateId
 		});
-	};
+	}
 };

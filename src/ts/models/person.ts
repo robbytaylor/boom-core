@@ -1,7 +1,9 @@
 export class Person {
-	constructor(private id: number) {}
-
 	private baseUrl: string = '/cms/person';
+
+	constructor(private id: number) {
+		this.id = id;
+	}
 
 	add() {
 		var deferred = new $.Deferred(),
@@ -49,8 +51,6 @@ export class Person {
 			});
 
 			var groupIds = Object.keys(groups);
-			console.log(groups);
-			console.log(groupIds);
 			if (groupIds.length) {
 				$.post(url, {'groups[]' : groupIds})
 					.done(function() {
@@ -64,7 +64,7 @@ export class Person {
 		return deferred;
 	}
 
-	addWithData(data) {
+	addWithData(data: Object) {
 		return $.post(this.baseUrl + 'add', data);
 	}
 
@@ -86,15 +86,15 @@ export class Person {
 		return deferred;
 	}
 
-	deleteMultiple(ids) {
+	deleteMultiple(ids: Array<number>) {
 		return $.post(this.baseUrl + 'delete', {'people[]': ids});
 	}
 
-	removeGroup(groupId) {
+	removeGroup(groupId: number) {
 		return $.post(this.baseUrl + 'remove_group/' + this.id, {group_id: groupId});
 	}
 
-	save(data) {
+	save(data: Object) {
 		return $.post(this.baseUrl + 'save/' + this.id, data);
 	}
 }
