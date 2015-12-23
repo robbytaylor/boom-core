@@ -1,4 +1,4 @@
-class Notification {
+export class Notification {
 	private $document = $(top.document);
 
 	private options = {
