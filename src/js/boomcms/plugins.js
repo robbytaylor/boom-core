@@ -1,12 +1,11 @@
 /**
-@fileOverview jQuery plugins written specifically for Boom.
+@fileOverview jQuery plugins written specifically for BoomCMS.
 */
 
 /**
 @namespace
 @name $.fn
 */
-
 (function($) {
 
 	/**
@@ -29,7 +28,7 @@
 				asset = new boomAsset($this.attr('data-asset')),
 				url  = asset.getUrl('thumb', $this.width(), $this.height()) + '?' + Math.floor(Date.now() / 1000);
 
-			$this.find('img').attr('src', url);	
+			$this.find('img').attr('src', url);
 		});
 	};
-})( jQuery );
+})(jQuery);

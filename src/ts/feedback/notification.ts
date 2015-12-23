@@ -1,7 +1,7 @@
-function boomNotification(message) {
-	boomNotification.prototype.$document = $(top.document);
+class Notification {
+	private $document = $(top.document);
 
-	boomNotification.prototype.options = {
+	private options = {
 		theme : 'default',
 		speed : 240,
 		closer : false,
@@ -9,9 +9,13 @@ function boomNotification(message) {
 		open : function(elem, message){
 			$(this).removeClass('ui-state-highlight').addClass('ui-state-default').find('.message').prepend('<span class="ui-icon ui-icon-check ui-helper-left" />');
 		}
-	};
+	}
 
-	boomNotification.prototype.open = function(message) {
+	constructor(message: string) {
+		this.open(message);
+	}
+
+	open(message: string) {
 		var notified = false,
 			waitingApproval = false,
 			timer,
@@ -31,7 +35,7 @@ function boomNotification(message) {
 					});
 
 					notified = true;
-	
+
 					setTimeout(function() {
 						n.close();
 					}, 3000);
@@ -39,15 +43,15 @@ function boomNotification(message) {
 			});
 		}
 
-		var timer = setInterval(function() {
+		timer = setInterval(function() {
 			if ( ! waitingApproval && ! notified) {
 				notification.showFallback(message);
 				clearInterval(timer);
 			}
 		}, 100);
-	};
+	}
 
-	boomNotification.prototype.showFallback = function(message) {
+	private showFallback(message: string) {
 		if ( ! this.$document.find('#b-notification').length) {
 			$('<div id="b-notification"></div>')
 					.appendTo(this.$document.find('body'));
@@ -56,7 +60,5 @@ function boomNotification(message) {
 		$.jGrowl(message, this.options);
 
 		this.$document.find('#b-notification').append($('#jGrowl'));
-	};
-
-	this.open(message);
+	}
 };

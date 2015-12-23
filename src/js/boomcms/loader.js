@@ -1,5 +1,5 @@
 $.widget('boom.boomLoader', {
-	_create : function(){
+	_create: function(){
 		var img = new Image();
 		img.src = '/vendor/boomcms/boom-core/img/ajax_load.gif';
 
@@ -19,11 +19,11 @@ $.widget('boom.boomLoader', {
 			 });
 	},
 
-	show : function() {
+	show: function() {
 		this.loader.show();
 	},
 
-	hide : function() {
+	hide: function() {
 		this.loader.hide();
 	}
 });
