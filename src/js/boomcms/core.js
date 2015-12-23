@@ -15,9 +15,6 @@ $.extend({
 	boom :
 		/** @lends $.boom */
 		{
-
-		options: {},
-
 		setup: function(){
 
 			$.extend(this, { config: window.boomConfig });
@@ -39,12 +36,8 @@ $.extend({
 
 		/**
 		Initialise boom classes. Create top bar and UI.
-		@param {Object} options Boom options. Extends and overrides defaults in boom.config.
 		*/
-		init: function(options) {
-			( options ) && $.extend( this.config, options );
-			this.options = options;
-
+		init: function() {
 			$('#b-topbar, body').ui();
 
 			this._init_widgets();
@@ -52,26 +45,19 @@ $.extend({
 
 		_init_widgets : function() {
 			this.loader = $('body').boomLoader({}).data('boomBoomLoader');
-		}
-	}
-});
+		},
 
-$.extend($.boom,
-	/** @lends $.boom */
-	{
-	/**
-	@class
-	*/
-	editor: {
-		state : function(state, url) {
+		editor: {
+			state : function(state, url) {
 
-			$.post('/cms/editor/state', {state: state}, function() {
-				if (url) {
-					top.location = url;
-				} else {
-					top.location.reload();
-				}
-			});
+				$.post('/cms/editor/state', {state: state}, function() {
+					if (url) {
+						top.location = url;
+					} else {
+						top.location.reload();
+					}
+				});
+			}
 		}
 	}
 });
