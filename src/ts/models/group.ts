@@ -1,22 +1,26 @@
+import {Dialog} from '../feedback/dialog';
+import {Confirmation} from '../feedback/confirmation';
+
 export class Group {
-	private base_url: string = '/cms/group';
+	private baseUrl: string = '/cms/group';
 
 	constructor(private id: number) {
 		this.id = id;
 	}
 
-	add() {
+	add(): JQueryDeferred<any> {
 		var group = this,
-			deferred = new $.Deferred(),
-			dialog;
+			deferred: JQueryDeferred<any> = $.Deferred(),
+			dialog: Dialog;
 
-		dialog = new boomDialog({
-			url: this.base_url + 'add',
+		dialog = new Dialog({
+			url: this.baseUrl + 'add',
 			title: 'Add group',
 			closeButton: false,
 			saveButton: true
-		})
-		.done(function() {
+		});
+
+		dialog.open().done(function() {
 			group.addWithName(dialog.contents.find('input[type=text]').val())
 				.done(function(response) {
 					deferred.resolve(response);
@@ -26,16 +30,16 @@ export class Group {
 		return deferred;
 	}
 
-	addRole(role_id: number, allowed: boolean, page_id: number) {
-		var deferred = new $.Deferred(),
+	addRole(roleId: number, allowed: boolean, pageId: number) {
+		var deferred: JQueryDeferred<any> = $.Deferred(),
 			group = this;
 
-		group.removeRole(role_id, page_id)
+		group.removeRole(roleId, pageId)
 			.done(function() {
-				$.post(group.base_url + 'add_role/' + group.id, {
-					role_id : role_id,
-					allowed : allowed,
-					page_id: page_id
+				$.post(group.baseUrl + 'add_role/' + group.id, {
+					role_id: roleId,
+					allowed: allowed,
+					page_id: pageId
 				})
 				.done(function(response) {
 					deferred.resolve(response);
@@ -46,21 +50,21 @@ export class Group {
 	}
 
 	addWithName(name: string) {
-		return $.post(this.base_url + 'add', {name: name});
+		return $.post(this.baseUrl + 'add', {name: name});
 	}
 
 	getRoles(page_id: number) {
-		return $.get(this.base_url + 'list_roles/' + this.id + '?page_id=' + page_id);
+		return $.get(this.baseUrl + 'list_roles/' + this.id + '?page_id=' + page_id);
 	}
 
-	remove() {
+	remove(): JQueryDeferred<any> {
 		var group = this,
-			deferred = new $.Deferred(),
-			confirmation = new boomConfirmation('Please confirm', 'Are you sure you want to remove this group? <br /><br /> This will delete the group from the database and cannot be undone!');
+			deferred: JQueryDeferred<any> = $.Deferred(),
+			confirmation = new Confirmation('Please confirm', 'Are you sure you want to remove this group? <br /><br /> This will delete the group from the database and cannot be undone!');
 
-		confirmation
+		confirmation.open()
 			.done(function() {
-				$.post(group.base_url + 'delete/' + group.id)
+				$.post(group.baseUrl + 'delete/' + group.id)
 					.done(function(response) {
 						deferred.resolve(response);
 					});
@@ -69,14 +73,14 @@ export class Group {
 		return deferred;
 	}
 
-	removeRole(role_id: number, page_id: number) {
-		return $.post(this.base_url + 'remove_role/' + this.id, {
-			role_id : role_id,
-			page_id : page_id
+	removeRole(roleId: number, pageId: number) {
+		return $.post(this.baseUrl + 'remove_role/' + this.id, {
+			role_id : roleId,
+			page_id : pageId
 		});
 	}
 
 	save(data: Object) {
-		return $.post(this.base_url + 'save/' + this.id, data);
+		return $.post(this.baseUrl + 'save/' + this.id, data);
 	}
 };

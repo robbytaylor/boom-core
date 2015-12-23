@@ -53,12 +53,8 @@ module.exports = function(grunt) {
 					'bower_components/pace/pace.js',
 					'bower_components/pushy/js/pushy.js',
 					'src/js/jquery/*.js',
-					'src/js/boomcms/notification.js',
-					'src/js/boomcms/core.js',
 					'src/js/boomcms/history.js',
-					'src/js/boomcms/dialog.js',
 					'src/js/boomcms/alert.js',
-					'src/js/boomcms/confirmation.js',
 					'src/js/boomcms/tagAutocomplete.js',
 					'src/js/boomcms/page/status.js',
 					'src/js/boomcms/page/page.js',
@@ -71,7 +67,6 @@ module.exports = function(grunt) {
 					'src/js/boomcms/page/url.js',
 					'src/js/boomcms/page/settings/*.js',
 					'src/js/boomcms/textEditor.js',
-					'src/js/boomcms/chunk.js',
 					'src/js/boomcms/chunk/chunk.js',
 					'src/js/boomcms/chunk/text.js',
 					'src/js/boomcms/chunk/linkset.js',
@@ -90,10 +85,8 @@ module.exports = function(grunt) {
 					'src/js/boomcms/chunk/location/editor.js',
 					'src/js/boomcms/chunk/html.js',
 					'src/js/boomcms/page/title.js',
-					'src/js/boomcms/link/link.js',
 					'src/js/boomcms/link/picker.js',
 					'src/js/boomcms/template/manager.js',
-					'src/js/boomcms/asset/asset.js',
 					'src/js/boomcms/asset/editor.js',
 					'src/js/boomcms/asset/manager.js',
 					'src/js/boomcms/asset/picker.js',
@@ -103,9 +96,7 @@ module.exports = function(grunt) {
 					'src/js/boomcms/asset/tagAutocomplete.js',
 					'src/js/boomcms/asset/tagSearch.js',
 					'src/js/boomcms/asset/selection.js',
-					'src/js/boomcms/group/group.js',
 					'src/js/boomcms/group/permissionsEditor.js',
-					'src/js/boomcms/person.js',
 					'src/js/boomcms/peopleManager.js',
 					'src/js/boomcms/imageEditor.js',
 					'src/js/boomcms/approvals.js',
@@ -124,8 +115,8 @@ module.exports = function(grunt) {
 		},
 		typescript: {
 			base: {
-				src: ['src/js/boomcms/*.ts'],
-				dest: 'src/js/boomcms/',
+				src: ['src/ts/**/*.ts'],
+				dest: 'src/ts/tmp.js',
 				options: {
 					module: 'commonjs',
 					target: 'es5',
@@ -133,17 +124,20 @@ module.exports = function(grunt) {
 					declaration: true,
 					definitions: [
 						'typings/jquery/jquery.d.ts',
-						'src/js/boomcms/boomcms.d.ts'
+						'typings/jquery/jqueryui.d.ts'
 					]
 				}
 			}
 		},
 		transpile: {
 			main: {
-	      			type: "cjs", // or "amd" or "yui"
+	      			type: "cjs",
 	      			files: [{
 		        		expand: true,
-		        		src: ['public/js/main.js'],
+		        		src: [
+							'public/js/main.js',
+							'src/ts/tmp.js'
+						],
 		        		dest: 'public/js/main.js'
 	      			}]
 			}

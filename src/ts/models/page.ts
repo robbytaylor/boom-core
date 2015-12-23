@@ -1,4 +1,7 @@
 import {Asset} from './asset';
+import {Confirmation} from '../feedback/confirmation';
+import {Dialog} from '../feedback/dialog';
+import {Notification} from '../feedback/notification';
 
 export class Page {
 	private baseUrl: string = '/cms/page/';
@@ -8,10 +11,10 @@ export class Page {
 	}
 
 	add() {
-		var promise = new $.Deferred(),
-			page_id = this.id;
+		var promise = $.Deferred(),
+			pageId = this.id;
 
-		$.post(this.baseUrl + 'add/' + page_id, function(response) {
+		$.post(this.baseUrl + 'add/' + pageId, function(response) {
 			(typeof response.url !== 'undefined')? promise.resolve(response) : promise.reject(response);
 		});
 
@@ -35,20 +38,22 @@ export class Page {
 		return $.post(this.baseUrl + 'settings/delete/' + this.id, options);
 	}
 
-	embargo() {
+	embargo(): JQueryDeferred<any> {
 		var page = this,
 			url = this.baseUrl + 'version/embargo/' + this.id,
-			promise = new $.Deferred(),
+			promise: JQueryDeferred<any> = $.Deferred(),
 			dialog;
 
-		dialog = new boomDialog({
+		dialog = new Dialog({
 			url: url,
 			title: 'Page embargo',
 			width: 440
-		}).done(function() {
+		})
+
+		dialog.open().done(function() {
 			$.post(url, dialog.contents.find('form').serialize())
 			.done(function(response) {
-				new boomNotification("Page embargo saved.");
+				new Notification("Page embargo saved.");
 				promise.resolve(response);
 			});
 		});
@@ -56,8 +61,8 @@ export class Page {
 		return promise;
 	}
 
-	publish() {
-		var promise = new $.Deferred();
+	publish(): JQueryDeferred<any> {
+		var promise: JQueryDeferred<any> = $.Deferred();
 
 		$.post(this.baseUrl + 'version/embargo/' + this.id)
 			.done(function(response) {
@@ -75,7 +80,7 @@ export class Page {
 
 	removeRelatedPage(pageId: number) {
 		return $.post(this.baseUrl + 'relations/remove/' + this.id, {
-			related_page_id: page_id
+			related_page_id: pageId
 		});
 	}
 
@@ -85,11 +90,12 @@ export class Page {
 		});
 	}
 
-	revertToPublished() {
-		var	promise = new $.Deferred(),
+	revertToPublished(): JQueryDeferred<any> {
+		var	promise: JQueryDeferred<any> = $.Deferred(),
 			page = this;
 
-		new boomConfirmation('Discard changes', 'Are you sure you want to discard any unpublished changes and revert this page to it\'s published state?')
+		new Confirmation('Discard changes', 'Are you sure you want to discard any unpublished changes and revert this page to it\'s published state?')
+			.open()
 			.done(function() {
 				$.post(page.baseUrl + 'discard/' + page.id)
 					.done(function() {

@@ -1,9 +1,14 @@
-function boomDialog(options) {
-	this.deferred = new $.Deferred().always(function() {
+/// <reference path="../../../typings/jquery/jquery.d.ts" />
+/// <reference path="../../../typings/jqueryui/jqueryui.d.ts" />
+
+export class Dialog {
+	public contents: JQuery;
+
+	private deferred: JQueryDeferred<any> = $.Deferred().always(function() {
 		$(top.window).trigger('boom:dialog:close');
 	});
 
-	this.options = $.extend({
+	private defaultOptions = {
 		width: 'auto',
 		cancelButton : true,
 		closeButton : true,
@@ -15,32 +20,36 @@ function boomDialog(options) {
 		buttons : [],
 		dialogClass : 'b-dialog',
 		boomDialog: this
-	}, options);
+	};
 
-	boomDialog.prototype.always = function(callback) {
+	constructor(private options: any) {
+		this.options = $.extend(this.defaultOptions, options);
+	}
+
+	always(callback: Function) {
 		this.deferred.always(callback);
 
 		return this;
-	};
+	}
 
- 	boomDialog.prototype.cancelButton = {
+ 	private cancelButton = {
 		text : 'Cancel',
 		icons : { primary : 'b-button-icon-cancel b-button-icon' },
 		class : 'b-button',
 		click : function() {
-			var boomDialog = $(this).dialog('option', 'boomDialog');
-			boomDialog.cancel();
+			var dialog = $(this).dialog('option', 'boomDialog');
+			dialog.cancel();
 		}
-	};
+	}
 
-	boomDialog.prototype.cancel = function() {
-		this.deferred.rejectWith(this.dialog);
+	cancel() {
+		this.deferred.reject();
 
 		this.contents.remove();
 		this.contents = null;
-	};
+	}
 
-	boomDialog.prototype.closeButton = {
+	private closeButton = {
 		text : 'Okay',
 		class : 'b-button',
 		icons : { primary : 'b-button-icon-accept b-button-icon' },
@@ -48,40 +57,37 @@ function boomDialog(options) {
 			var boomDialog = $(this).dialog('option', 'boomDialog');
 			boomDialog.close();
 		}
-	};
+	}
 
-	boomDialog.prototype.close = function() {
-		this.deferred.resolveWith(this.dialog);
-		
+	close() {
+		this.deferred.resolve();
+
 		this.contents.remove();
 		this.contents = null;
-	};
+	}
 
-	boomDialog.prototype.done = function(callback) {
+	done(callback: Function): Dialog {
 		this.deferred.done(callback);
 
 		return this;
-	};
+	}
 
-	boomDialog.prototype.fail = function(callback) {
+	fail(callback: Function): Dialog {
 		this.deferred.fail(callback);
 
 		return this;
-	};
+	}
 
-	boomDialog.prototype.init = function() {
-		var boomDialog = this;
-
-		$(top.window)
-			.trigger('boom:dialog:open');
+	init = function() {
+		$(top.window).trigger('boom:dialog:open');
 
 		this
 			.contents
 			.dialog(this.options)
 			.ui();
-	};
+	}
 
-	boomDialog.prototype.open = function() {
+	open(): JQueryDeferred<any> {
 		var self = this,
 			$div = $('<div></div>');
 
@@ -109,7 +115,7 @@ function boomDialog(options) {
 							}
 						} else {
 							self.deferred.reject(response, xhr.status);
-						} 
+						}
 					})
 				}, 100);
 			}
@@ -124,17 +130,17 @@ function boomDialog(options) {
 				}
 			}, 100);
 		}
-	};
 
-	boomDialog.prototype.saveButton = {
-		text : 'Save',
-		class : 'b-button',
-		icons : { primary : 'b-button-icon-save b-button-icon' },
-		click : function() {
+		return this.deferred;
+	}
+
+	private saveButton = {
+		text: 'Save',
+		class: 'b-button',
+		icons: { primary : 'b-button-icon-save b-button-icon' },
+		click: function() {
 			var boomDialog = $(this).dialog('option', 'boomDialog');
 			boomDialog.close();
 		}
-	};
-
-	this.open();
+	}
 };

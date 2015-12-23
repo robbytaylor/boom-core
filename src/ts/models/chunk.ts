@@ -1,4 +1,4 @@
-class Chunk {
+export class Chunk {
 	private urlPrefix: string = '/cms/chunk/';
 
 	constructor(private pageId: number, private type: string, private slotname: string) {

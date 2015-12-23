@@ -11,7 +11,7 @@ export class Asset {
 		return $.get(this.getUrl('embed'));
 	}
 
-	getUrl(action: string, width: number, height: number) {
+	getUrl(action: string, width: number, height: number): string {
 		var url = '/asset/' + this.getId();
 
 		if ((!action || action === 'view') && !(width || height)) {

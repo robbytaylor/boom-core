@@ -1,3 +1,6 @@
+import {Dialog} from '../feedback/dialog';
+import {Confirmation} from '../feedback/confirmation';
+
 export class Person {
 	private baseUrl: string = '/cms/person';
 
@@ -6,18 +9,19 @@ export class Person {
 	}
 
 	add() {
-		var deferred = new $.Deferred(),
+		var deferred = $.Deferred(),
 			person = this,
-			dialog;
+			dialog: Dialog;
 
-		dialog = new boomDialog({
+		dialog = new Dialog({
 			url : this.baseUrl + 'add',
 			width: '600px',
 			title : 'Create new person',
 			closeButton: false,
 			saveButton: true
-		})
-		.done(function() {
+		});
+
+		dialog.open().done(function() {
 			var data = dialog.contents.find('form').serialize();
 
 			person.addWithData(data)
@@ -32,17 +36,19 @@ export class Person {
 		return deferred;
 	}
 
-	addGroups() {
+	addGroups(): JQueryDeferred<any> {
 		var url = this.baseUrl + 'add_group/' + this.id,
-			deferred = new $.Deferred(),
-			dialog;
+			deferred: JQueryDeferred<any> = $.Deferred(),
+			dialog: Dialog;
 
-		dialog = new boomDialog({
+		dialog = new Dialog({
 			url: url,
 			title: 'Add group',
 			closeButton: false,
 			saveButton: true
-		}).done(function() {
+		});
+
+		dialog.open().done(function() {
 			var groups = {};
 
 			dialog.contents.find('form select option:selected').each(function(i, el) {
@@ -69,11 +75,11 @@ export class Person {
 	}
 
 	delete() {
-		var deferred = new $.Deferred(),
+		var deferred = $.Deferred(),
 			person = this,
-			confirmation = new boomConfirmation('Please confirm', 'Are you sure you want to delete this person?');
+			confirmation = new Confirmation('Please confirm', 'Are you sure you want to delete this person?');
 
-			confirmation
+			confirmation.open()
 				.done(function() {
 					$.post(person.baseUrl + 'delete', {
 						people : [person.id]
