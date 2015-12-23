@@ -15,10 +15,10 @@ $.extend({
 	boom :
 		/** @lends $.boom */
 		{
-		setup: function(){
-
-			$.extend(this, { config: window.boomConfig });
-
+		/**
+		Initialise boom classes. Create top bar and UI.
+		*/
+		init: function() {
 			if (typeof(top.$) === 'undefined') {
 				top.$ = $;
 			}
@@ -32,19 +32,8 @@ $.extend({
 					'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 				}
 			});
-		},
 
-		/**
-		Initialise boom classes. Create top bar and UI.
-		*/
-		init: function() {
 			$('#b-topbar, body').ui();
-
-			this._init_widgets();
-		},
-
-		_init_widgets : function() {
-			this.loader = $('body').boomLoader({}).data('boomBoomLoader');
 		},
 
 		editor: {
@@ -61,5 +50,3 @@ $.extend({
 		}
 	}
 });
-
-$.boom.setup();
