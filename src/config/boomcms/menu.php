@@ -2,33 +2,33 @@
 
 return [
     'pages' => [
-        'url'      => '/cms/pages',
-        'role'     => 'manage_pages',
+        'url'      => '/boomcms/pages',
+        'role'     => 'managePages',
         'icon'     => 'sitemap',
     ],
     'approvals' => [
-        'url'      => '/cms/approvals',
-        'role'     => 'manage_approvals',
+        'url'      => '/boomcms/approvals',
+        'role'     => 'manageApprovals',
         'icon'     => 'thumbs-o-up',
     ],
     'templates' => [
-        'url'      => '/cms/templates',
-        'role'     => 'manage_templates',
+        'url'      => '/boomcms/templates',
+        'role'     => 'manageTemplates',
         'icon'     => 'file-o',
     ],
     'assets' => [
-        'url'      => '/cms/assets',
-        'role'     => 'manage_assets',
+        'url'      => '/boomcms/assets',
+        'role'     => 'manageAssets',
         'icon'     => 'picture-o',
     ],
     'people' => [
-        'url'      => '/cms/people',
-        'role'     => 'manage_people',
+        'url'      => '/boomcms/people',
+        'role'     => 'managePeople',
         'icon'     => 'users',
     ],
     'settings' => [
-        'url'      => '/cms/settings',
-        'role'     => 'manage_settings',
+        'url'      => '/boomcms/settings',
+        'role'     => 'manageSettings',
         'icon'     => 'cog',
     ],
 ];

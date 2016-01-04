@@ -3,8 +3,6 @@
 namespace BoomCMS\ServiceProviders;
 
 use BoomCMS\Core\Template\Manager as TemplateManager;
-use BoomCMS\Database\Models\Template as TemplateModel;
-use BoomCMS\Repositories\Template as TemplateRepository;
 use BoomCMS\Support\Helpers\Config;
 use Illuminate\Support\ServiceProvider;
 
@@ -13,18 +11,19 @@ class TemplateServiceProvider extends ServiceProvider
     protected $themes = [];
 
     /**
-     * @var Template\Manager
-     */
-    protected $manager;
-
-    /**
      * Bootstrap any application services.
      *
      * @return void
      */
     public function boot()
     {
-        $this->themes = $this->manager->findInstalledThemes();
+        $manager = new TemplateManager($this->app['files'], $this->app['boomcms.repositories.template']);
+
+        $this->app->singleton('boomcms.template.manager', function ($app) use ($manager) {
+            return $manager;
+        });
+
+        $this->themes = $manager->findInstalledThemes();
 
         foreach ($this->themes as $theme) {
             Config::merge($theme->getConfigDirectory().DIRECTORY_SEPARATOR.'boomcms.php');
@@ -32,12 +31,19 @@ class TemplateServiceProvider extends ServiceProvider
 
         foreach ($this->themes as $theme) {
             $views = $theme->getViewDirectory();
+            $authViews = $views.DIRECTORY_SEPARATOR.'auth';
             $public = $theme->getPublicDirectory();
             $init = $theme->getDirectory().DIRECTORY_SEPARATOR.'init.php';
             $migrations = $theme->getDirectory().'/migrations/';
 
             $this->loadViewsFrom($views, $theme->getName());
             $this->loadViewsFrom($views.'/chunks', 'boomcms.chunks');
+
+            if (file_exists($authViews)) {
+                $this->publishes([
+                    $authViews => base_path('resources/views/auth'),
+                ], 'boomcms');
+            }
 
             if (file_exists($public)) {
                 $this->publishes([
@@ -57,20 +63,7 @@ class TemplateServiceProvider extends ServiceProvider
         }
     }
 
-    /**
-     * @return void
-     */
     public function register()
     {
-        $repository = new TemplateRepository(new TemplateModel());
-        $this->manager = $manager = new TemplateManager($this->app['files'], $repository);
-
-        $this->app->singleton('boomcms.repositories.template', function ($app) use ($repository) {
-            return $repository;
-        });
-
-        $this->app->singleton('boomcms.template.manager', function ($app) use ($manager) {
-            return $manager;
-        });
     }
 }

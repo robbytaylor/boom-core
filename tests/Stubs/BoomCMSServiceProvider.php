@@ -2,30 +2,26 @@
 
 namespace BoomCMS\Tests\Stubs;
 
-use BoomCMS\ServiceProviders\AssetServiceProvider;
 use BoomCMS\ServiceProviders\AuthServiceProvider;
 use BoomCMS\ServiceProviders\BoomCMSServiceProvider as BaseServiceProvider;
 use BoomCMS\ServiceProviders\ChunkServiceProvider;
 use BoomCMS\ServiceProviders\EditorServiceProvider;
 use BoomCMS\ServiceProviders\EventServiceProvider;
-use BoomCMS\ServiceProviders\PageServiceProvider;
-use BoomCMS\ServiceProviders\PersonServiceProvider;
-use BoomCMS\ServiceProviders\TagServiceProvider;
-use BoomCMS\ServiceProviders\URLServiceProvider;
+use BoomCMS\ServiceProviders\RepositoryServiceProvider;
+use BoomCMS\ServiceProviders\RouteServiceProvider;
+use BoomCMS\ServiceProviders\SettingsServiceProvider;
 use Illuminate\Html\HtmlServiceProvider;
 
 class BoomCMSServiceProvider extends BaseServiceProvider
 {
     protected $serviceProviders = [
-        AssetServiceProvider::class,
-        PersonServiceProvider::class,
+        RepositoryServiceProvider::class,
         AuthServiceProvider::class,
         EditorServiceProvider::class,
-        PageServiceProvider::class,
         ChunkServiceProvider::class,
-        URLServiceProvider::class,
-        TagServiceProvider::class,
         EventServiceProvider::class,
         HtmlServiceProvider::class,
+        RouteServiceProvider::class,
+        SettingsServiceProvider::class,
     ];
 }
