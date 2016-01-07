@@ -1,16 +1,6 @@
 export class Notification {
 	private $document = $(top.document);
 
-	private options = {
-		theme : 'default',
-		speed : 240,
-		closer : false,
-		sticky : false,
-		open : function(elem, message){
-			$(this).removeClass('ui-state-highlight').addClass('ui-state-default').find('.message').prepend('<span class="ui-icon ui-icon-check ui-helper-left" />');
-		}
-	}
-
 	constructor(message: string) {
 		this.open(message);
 	}
@@ -52,13 +42,6 @@ export class Notification {
 	}
 
 	private showFallback(message: string) {
-		if ( ! this.$document.find('#b-notification').length) {
-			$('<div id="b-notification"></div>')
-					.appendTo(this.$document.find('body'));
-		}
-
-		$.jGrowl(message, this.options);
-
-		this.$document.find('#b-notification').append($('#jGrowl'));
-	}
+		$.jGrowl(message);
+	};
 };

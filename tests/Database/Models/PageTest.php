@@ -2,7 +2,7 @@
 
 namespace BoomCMS\Tests\Database\Models;
 
-use BoomCMS\Core\Chunk\Text;
+use BoomCMS\Chunk\Text;
 use BoomCMS\Database\Models\Asset;
 use BoomCMS\Database\Models\Page;
 use BoomCMS\Database\Models\URL;
@@ -13,6 +13,101 @@ use Mockery as m;
 class PageTest extends AbstractModelTestCase
 {
     protected $model = Page::class;
+
+    public function testGetAddPageBehaviour()
+    {
+        $page = new Page([Page::ATTR_ADD_BEHAVIOUR => Page::ADD_PAGE_CHILD]);
+        $this->assertEquals(Page::ADD_PAGE_CHILD, $page->getAddPageBehaviour());
+    }
+
+    public function testGetAddPageBehaviourDefaultIsPrompt()
+    {
+        $page = new Page();
+        $this->assertEquals(Page::ADD_PAGE_PROMPT, $page->getAddPageBehaviour());
+    }
+
+    public function testGetChildAddPageBehaviour()
+    {
+        $page = new Page([Page::ATTR_CHILD_ADD_BEHAVIOUR => Page::ADD_PAGE_CHILD]);
+
+        $this->assertEquals(Page::ADD_PAGE_CHILD, $page->getChildAddPageBehaviour());
+    }
+
+    /**
+     * The add page parent is the current page if the add page behaviour is to add a child
+     * Or it's to add a sibling but the page doesn't have a parent.
+     */
+    public function testGetAddPageParentReturnsSelf()
+    {
+        $page = m::mock(Page::class.'[isRoot]');
+
+        $page
+            ->shouldReceive('isRoot')
+            ->twice()
+            ->andReturn(true);
+
+        foreach ([Page::ADD_PAGE_CHILD, Page::ADD_PAGE_SIBLING, Page::ADD_PAGE_PROMPT] as $behaviour) {
+            $page->{Page::ATTR_ADD_BEHAVIOUR} = $behaviour;
+
+            $this->assertEquals($page, $page->getAddPageParent());
+        }
+    }
+
+    public function testGetAddPageParentReturnsItsParent()
+    {
+        $parent = new Page();
+        $page = m::mock(Page::class.'[isRoot,getParent]');
+        $page->{Page::ATTR_ADD_BEHAVIOUR} = Page::ADD_PAGE_SIBLING;
+
+        $page
+            ->shouldReceive('isRoot')
+            ->once()
+            ->andReturn(false);
+
+        $page
+            ->shouldReceive('getParent')
+            ->once()
+            ->andReturn($parent);
+
+        $this->assertEquals($parent, $page->getAddPageParent());
+    }
+
+    /**
+     * getAddPageParent() should return null when the behaviour is to prompt and it doesn't have a parent
+     * since the parent is then determined by the user response.
+     */
+    public function testGetAddPageParentInheritsSettingFromParent()
+    {
+        $parent = new Page();
+        $page = m::mock(Page::class.'[isRoot,getParent]');
+
+        $values = [
+            Page::ADD_PAGE_CHILD   => $page,
+            Page::ADD_PAGE_SIBLING => $parent,
+            Page::ADD_PAGE_PROMPT  => $page,
+        ];
+
+        $page->{Page::ATTR_ADD_BEHAVIOUR} = Page::ADD_PAGE_PROMPT;
+        $page
+            ->shouldReceive('isRoot')
+            ->andReturn(false);
+
+        $page
+            ->shouldReceive('getParent')
+            ->andReturn($parent);
+
+        foreach ($values as $v => $addParent) {
+            $parent->{Page::ATTR_CHILD_ADD_BEHAVIOUR} = $v;
+
+            $this->assertEquals($addParent, $page->getAddPageParent());
+        }
+    }
+
+    public function testGetChildAddPageBehaviourDefaultIsPrompt()
+    {
+        $page = new Page();
+        $this->assertEquals(Page::ADD_PAGE_PROMPT, $page->getChildAddPageBehaviour());
+    }
 
     public function testGetChildOrderingPolicy()
     {
@@ -71,11 +166,12 @@ class PageTest extends AbstractModelTestCase
         $builder = m::mock(Builder::class);
         $builder->shouldReceive('first')->once();
 
-        $page = $this->getMock(Page::class, ['belongsTo']);
-        $page->expects($this->once())
-            ->method('belongsTo')
-            ->with($this->equalTo(Asset::class))
-            ->willReturn($builder);
+        $page = m::mock(Page::class.'[belongsTo]');
+        $page
+            ->shouldReceive('belongsTo')
+            ->once()
+            ->with(Asset::class, 'feature_image_id')
+            ->andReturn($builder);
 
         $page->getFeatureImage();
     }
@@ -119,6 +215,22 @@ class PageTest extends AbstractModelTestCase
         }
     }
 
+    public function testSetAddPageBehaviour()
+    {
+        $page = new Page();
+
+        $this->assertEquals($page, $page->setAddPageBehaviour(Page::ADD_PAGE_CHILD));
+        $this->assertEquals(Page::ADD_PAGE_CHILD, $page->getAddPageBehaviour());
+    }
+
+    public function testSetChildAddPageBehaviour()
+    {
+        $page = new Page();
+
+        $this->assertEquals($page, $page->setChildAddPageBehaviour(Page::ADD_PAGE_CHILD));
+        $this->assertEquals(Page::ADD_PAGE_CHILD, $page->getChildAddPageBehaviour());
+    }
+
     public function testSetAndGetChildOrderingPolicy()
     {
         $values = [
@@ -139,6 +251,30 @@ class PageTest extends AbstractModelTestCase
 
             $this->assertEquals($column, $newCol);
             $this->assertEquals($direction, $newDirection);
+        }
+    }
+
+    /**
+     * A page internal name can contain lowercase letters, underscores, hyphens, or numbers.
+     * 
+     * All other characters should be removed.
+     */
+    public function testSetInternalNameRemovesInvalidCharacters()
+    {
+        $page = new Page();
+
+        $values = [
+            '404'      => '404',
+            ' test '   => 'test',
+            'test'     => 'test',
+            '£$%^&*()' => '',
+            'TEST'     => 'test',
+        ];
+
+        foreach ($values as $in => $out) {
+            $page->setInternalName($in);
+
+            $this->assertEquals($out, $page->getInternalName());
         }
     }
 
@@ -168,32 +304,81 @@ class PageTest extends AbstractModelTestCase
         }
     }
 
-    public function testHasChildrenReturnsFalseIfChildCountIs0()
+    public function testShouldPromptOnAddPageAndChildShouldPromptOnAddPage()
     {
-        $page = $this->getMockBuilder(Page::class)
-            ->setMethods(['countChildren'])
-            ->setConstructorArgs([[]])
-            ->getMock();
+        $values = [
+            Page::ADD_PAGE_PROMPT  => true,
+            Page::ADD_PAGE_CHILD   => false,
+            Page::ADD_PAGE_SIBLING => false,
+            // GetAddPageBehaviour should never return anything else
+            // But just incase it does anything else should trigger the add page prompt
+            null         => true,
+            0            => true,
+            'asflsdkjfl' => true,
+        ];
+
+        foreach ($values as $behaviour => $shouldPrompt) {
+            $page = new Page([
+                Page::ATTR_ADD_BEHAVIOUR       => $behaviour,
+                Page::ATTR_CHILD_ADD_BEHAVIOUR => $behaviour,
+            ]);
+
+            $this->assertEquals($shouldPrompt, $page->shouldPromptOnAddPage());
+            $this->assertEquals($shouldPrompt, $page->childShouldPromptOnAddPage());
+        }
+    }
+
+    /**
+     * If the page is set to prompt on add page but it has a parent page
+     * The page should return the value of shouldPromptOnAddPage of the parent.
+     */
+    public function testShouldPromptOnAddPageInheritsFromParent()
+    {
+        $parent = new Page();
+        $page = m::mock(Page::class.'[isRoot,getParent]');
+        $page->{Page::ATTR_ADD_BEHAVIOUR} = Page::ADD_PAGE_PROMPT;
 
         $page
-            ->expects($this->once())
-            ->method('countChildren')
-            ->will($this->returnValue(0));
+            ->shouldReceive('isRoot')
+            ->times(3)
+            ->andReturn(false);
+
+        $page
+            ->shouldReceive('getParent')
+            ->times(3)
+            ->andReturn($parent);
+
+        $values = [
+            Page::ADD_PAGE_PROMPT,
+            Page::ADD_PAGE_CHILD,
+            Page::ADD_PAGE_SIBLING,
+        ];
+
+        foreach ($values as $v) {
+            $parent->{Page::ATTR_CHILD_ADD_BEHAVIOUR} = $v;
+
+            $this->assertEquals($parent->childShouldPromptOnAddPage(), $page->shouldPromptOnAddPage());
+        }
+    }
+
+    public function testHasChildrenReturnsFalseIfChildCountIs0()
+    {
+        $page = m::mock(Page::class)->makePartial();
+        $page
+            ->shouldReceive('countChildren')
+            ->once()
+            ->andReturn(0);
 
         $this->assertFalse($page->hasChildren());
     }
 
     public function testHasChildrenReturnsTrueIfChildCountGreaterThan0()
     {
-        $page = $this->getMockBuilder(Page::class)
-            ->setMethods(['countChildren'])
-            ->setConstructorArgs([[]])
-            ->getMock();
-
+        $page = m::mock(Page::class)->makePartial();
         $page
-           ->expects($this->once())
-            ->method('countChildren')
-            ->will($this->returnValue(1));
+            ->shouldReceive('countChildren')
+            ->once()
+            ->andReturn(1);
 
         $this->assertTrue($page->hasChildren());
     }

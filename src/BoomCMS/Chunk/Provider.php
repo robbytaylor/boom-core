@@ -1,10 +1,11 @@
 <?php
 
-namespace BoomCMS\Core\Chunk;
+namespace BoomCMS\Chunk;
 
 use BoomCMS\Contracts\Models\Page;
 use BoomCMS\Contracts\Models\PageVersion;
 use BoomCMS\Support\Facades\Editor;
+use BoomCMS\Support\Facades\Router;
 use Illuminate\Auth\AuthManager;
 
 class Provider
@@ -30,7 +31,7 @@ class Provider
         $modelName = 'BoomCMS\Database\Models\Chunk\\'.ucfirst($type);
         $model = $modelName::create($attrs);
 
-        $className = 'BoomCMS\Core\Chunk\\'.ucfirst($type);
+        $className = 'BoomCMS\Chunk\\'.ucfirst($type);
         $attrs['id'] = $model->id;
 
         return new $className($page, $attrs, $attrs['slotname'], true);
@@ -61,10 +62,10 @@ class Provider
      */
     public function edit($type, $slotname, $page = null)
     {
-        $className = 'BoomCMS\Core\Chunk\\'.ucfirst($type);
+        $className = 'BoomCMS\Chunk\\'.ucfirst($type);
 
         if ($page === null) {
-            $page = Editor::getActivePage();
+            $page = Router::getActivePage();
         } elseif ($page === 0) {
             // 0 was given as the page - this signifies a 'global' chunk not assigned to any page.
             $page = new Page();
@@ -114,7 +115,7 @@ class Provider
 
     public function get($type, $slotname, Page $page)
     {
-        $className = 'BoomCMS\Core\Chunk\\'.ucfirst($type);
+        $className = 'BoomCMS\Chunk\\'.ucfirst($type);
 
         $chunk = $this->find($type, $slotname, $page->getCurrentVersion());
         $attrs = $chunk ? $chunk->toArray() : [];
@@ -126,7 +127,7 @@ class Provider
     {
         foreach ($chunks as $type => $slotnames) {
             $model = ucfirst($type);
-            $class = "\BoomCMS\Core\Chunk\\".$model;
+            $class = "\BoomCMS\Chunk\\".$model;
 
             $models = $this->find($type, $slotnames, $page->getCurrentVersion());
             $found = [];
