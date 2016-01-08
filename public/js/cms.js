@@ -45414,7 +45414,7 @@ function Row() {
 };;function boomGroup(group_id) {
 	this.id = group_id;
 
-	boomGroup.prototype.base_url = '/boomcms/group/';
+	boomGroup.prototype.base_url = '/boomcms/group';
 
 	boomGroup.prototype.add = function() {
 		var group = this,
@@ -45422,7 +45422,7 @@ function Row() {
 			dialog;
 
 		dialog = new boomDialog({
-			url: this.base_url + 'add',
+			url: this.base_url + '/create',
 			title: 'Add group',
 			closeButton: false,
 			saveButton: true
@@ -45443,10 +45443,14 @@ function Row() {
 
 		group.removeRole(role_id, page_id)
 			.done(function() {
-				$.post(group.base_url + 'add_role/' + group.id, {
-					role_id : role_id,
-					allowed : allowed,
-					page_id: page_id
+				$.ajax({
+					type: 'put',
+					url: group.base_url + '/' + group.id + '/roles',
+					data: {
+						role_id : role_id,
+						allowed : allowed,
+						page_id: page_id
+					}
 				})
 				.done(function(response) {
 					deferred.resolve(response);
@@ -45457,11 +45461,11 @@ function Row() {
 	};
 
 	boomGroup.prototype.addWithName = function(name) {
-		return $.post(this.base_url + 'add', {name: name});
+		return $.post(this.base_url, {name: name});
 	};
 
 	boomGroup.prototype.getRoles = function(page_id) {
-		return $.getJSON(this.base_url + 'list_roles/' + this.id + '?page_id=' + page_id);
+		return $.getJSON(this.base_url + '/' + this.id + '/roles?page_id=' + page_id);
 	};
 
 	boomGroup.prototype.remove = function() {
@@ -45471,24 +45475,35 @@ function Row() {
 
 		confirmation
 			.done(function() {
-				$.post(group.base_url + 'delete/' + group.id)
-					.done(function(response) {
-						deferred.resolve(response);
-					});
+				$.ajax({
+					url: group.base_url + '/' + group.id,
+					type: 'delete'
+				})
+				.done(function(response) {
+					deferred.resolve(response);
+				});
 			});
 
 		return deferred;
 	};
 
 	boomGroup.prototype.removeRole = function(role_id, page_id) {
-		return $.post(this.base_url + 'remove_role/' + this.id, {
-			role_id : role_id,
-			page_id : page_id
+		return $.ajax({
+			type: 'delete',
+			url: this.base_url + '/' + this.id + '/roles',
+			data: {
+				role_id : role_id,
+				page_id : page_id
+			}
 		});
 	},
 
 	boomGroup.prototype.save = function(data) {
-		return $.post(this.base_url + 'save/' + this.id, data);
+		return $.ajax({
+			type: 'put',
+			url: this.base_url + '/' + this.id,
+			data: data
+		});
 	};
 };;$.widget('boom.groupPermissionsEditor', {
 	group : null,
@@ -45588,7 +45603,7 @@ function Row() {
 });;function boomPerson(person_id) {
 	this.id = person_id;
 
-	boomPerson.prototype.base_url = '/boomcms/person/';
+	boomPerson.prototype.baseUrl = '/boomcms/person';
 
 	boomPerson.prototype.add = function() {
 		var deferred = new $.Deferred(),
@@ -45596,7 +45611,7 @@ function Row() {
 			dialog;
 
 		dialog = new boomDialog({
-			url : this.base_url + 'add',
+			url : this.baseUrl + '/create',
 			width: '600px',
 			title : 'Create new person',
 			closeButton: false,
@@ -45618,7 +45633,7 @@ function Row() {
 	};
 
 	boomPerson.prototype.addGroups = function() {
-		var url = this.base_url + 'add_group/' + this.id,
+		var url = this.baseUrl + '/' + this.id + '/groups',
 			deferred = new $.Deferred(),
 			dialog;
 
@@ -45636,8 +45651,7 @@ function Row() {
 			});
 
 			var groupIds = Object.keys(groups);
-			console.log(groups);
-			console.log(groupIds);
+
 			if (groupIds.length) {
 				$.post(url, {'groups[]' : groupIds})
 					.done(function() {
@@ -45652,7 +45666,7 @@ function Row() {
 	};
 
 	boomPerson.prototype.addWithData = function(data) {
-		return $.post(this.base_url + 'add', data);
+		return $.post(this.baseUrl, data);
 	};
 
 	boomPerson.prototype.delete = function() {
@@ -45662,9 +45676,7 @@ function Row() {
 
 			confirmation
 				.done(function() {
-					$.post(person.base_url + 'delete', {
-						people : [person.id]
-					})
+					person.deleteMultiple([person.id])
 					.done(function() {
 						deferred.resolve();
 					});
@@ -45673,16 +45685,29 @@ function Row() {
 		return deferred;
 	};
 
-	boomPerson.prototype.deleteMultiple = function(people_ids) {
-		return $.post(this.base_url + 'delete', {'people[]' : people_ids});
+	boomPerson.prototype.deleteMultiple = function(peopleIds) {
+		return 	$.ajax({
+			type: 'delete',
+			url: this.baseUrl,
+			data: {
+				'people[]': peopleIds
+			}
+		});
 	};
 
-	boomPerson.prototype.removeGroup = function(group_id) {
-		return $.post(this.base_url + 'remove_group/' + this.id, {group_id: group_id});
+	boomPerson.prototype.removeGroup = function(groupId) {
+		return $.ajax({
+			type: 'delete',
+			url: this.baseUrl + '/' + this.id + '/groups/' + groupId
+		});
 	};
 
 	boomPerson.prototype.save = function(data) {
-		return $.post(this.base_url + 'save/' + this.id, data);
+		return $.ajax({
+			type: 'put',
+			url: this.baseUrl + '/' + this.id,
+			data: data
+		});
 	};
 };;$.widget('boom.peopleManager', {
 	homeUrl : '/boomcms/people',
