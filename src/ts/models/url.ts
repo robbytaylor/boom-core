@@ -1,13 +1,18 @@
-function boomPageUrl(id, pageId) {
-	this.id = id;
-	this.pageId = pageId;
+import {Confirmation} from '../ui/confirmation';
+import {Dialog} from '../ui/dialog';
 
-	boomPageUrl.prototype.add = function() {
+export class Url {
+	constructor(private id: number, private pageId: number) {
+		this.id = id;
+		this.pageId = pageId;
+	}
+
+	add(): JQueryDeferred<any> {
 		var url = this,
-			deferred = new $.Deferred(),
+			deferred = $.Deferred(),
 			dialog;
 
-		dialog = new boomDialog({
+		dialog = new Dialog({
 			url : '/boomcms/page/' + this.pageId + '/urls/add',
 			title : 'Add URL',
 			closeButton: false,
@@ -25,8 +30,8 @@ function boomPageUrl(id, pageId) {
 		return deferred;
 	};
 
-	boomPageUrl.prototype.addWithLocation = function(location) {
-		var deferred = new $.Deferred(),
+	addWithLocation(location: string): JQueryDeferred<any> {
+		var deferred = $.Deferred(),
 			pageId = this.pageId;
 
 		$.post('/boomcms/page/' + pageId + '/urls/add', {location : location})
@@ -47,12 +52,13 @@ function boomPageUrl(id, pageId) {
 		return deferred;
 	};
 
-	boomPageUrl.prototype.delete = function() {
+	delete(): JQueryDeferred<any> {
 		var url = this,
-			deferred = new $.Deferred(),
-			confirmation = new boomConfirmation('Please confirm', 'Are you sure you want to remove this URL? <br /><br /> This will delete the URL from the database and cannot be undone!');
+			deferred = n$.Deferred(),
+			confirmation = new Confirmation('Please confirm', 'Are you sure you want to remove this URL? <br /><br /> This will delete the URL from the database and cannot be undone!');
 
 			confirmation
+			.open()
 			.done(function() {
 				$.post('/boomcms/page/' + url.pageId + '/urls/' + url.id + '/delete')
 				.done(function() {
@@ -63,23 +69,23 @@ function boomPageUrl(id, pageId) {
 		return deferred;
 	};
 
-	boomPageUrl.prototype.makePrimary = function(is_primary) {
+	makePrimary(is_primary: boolean): JQueryDeferred<any> {
 		return $.post('/boomcms/page/' + this.pageId + '/urls/' + this.id + '/make_primary');
 	};
 
-	boomPageUrl.prototype.move = function() {
+	move(): JQueryDeferred<any> {
 		var deferred = new $.Deferred(),
 			move_dialog,
 			form_url = '/boomcms/page/' + this.pageId + '/urls/' + this.id + '/move',
 			dialog;
 
-		dialog = new boomDialog({
+		dialog = new Dialog({
 			url : form_url,
 			title : 'Move url',
 			deferred: deferred,
 			width : '500px'
 		});
-		dialog.done(function() {
+		dialog.open().done(function() {
 			$.post(form_url)
 				.done(function(response) {
 					deferred.resolve(response);

@@ -8,7 +8,7 @@ export class Person {
 		this.id = id;
 	}
 
-	add() {
+	add(): JQueryDeferred<any> {
 		var deferred = $.Deferred(),
 			person = this,
 			dialog: Dialog;
