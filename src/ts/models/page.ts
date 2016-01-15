@@ -1,7 +1,7 @@
 import {Asset} from './asset';
 import {Confirmation} from '../ui/confirmation';
 import {Dialog} from '../ui/dialog';
-import {Notification} from '../ui/notification';
+import {Message} from '../ui/message';
 
 export class Page {
 	private baseUrl: string = '/boomcms/page/';
@@ -94,7 +94,7 @@ export class Page {
 		dialog.open().done(function() {
 			$.post(url, dialog.contents.find('form').serialize())
 			.done(function(response) {
-				new Notification("Page embargo saved.");
+				new Message("Page embargo saved.");
 				promise.resolve(response);
 			});
 		});

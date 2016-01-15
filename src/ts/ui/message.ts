@@ -1,4 +1,4 @@
-export class Notification {
+export class Message {
 	private $document = $(top.document);
 
 	constructor(message: string) {
@@ -6,6 +6,8 @@ export class Notification {
 	}
 
 	open(message: string) {
+		declare var Notification;
+
 		var notified = false,
 			waitingApproval = false,
 			timer,
