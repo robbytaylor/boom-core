@@ -1,5 +1,5 @@
 export class Chunk {
-	private urlPrefix: string = '/cms/chunk/';
+	private urlPrefix: string = '/boomcms/chunk/';
 
 	constructor(private pageId: number, private type: string, private slotname: string) {
 		this.pageId = pageId;

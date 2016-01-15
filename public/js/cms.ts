@@ -39166,7 +39166,7 @@ $.extend($.boom,
 	editor: {
 		state : function(state, url) {
 
-			$.post('/cms/editor/state', {state: state}, function() {
+			$.post('/boomcms/editor/state', {state: state}, function() {
 				if (url) {
 					top.location = url;
 				} else {
@@ -39491,7 +39491,7 @@ $(function() {
 */
 function boomPage(page_id) {
 	this.id = page_id;
-	this.baseUrl = '/cms/page/';
+	this.baseUrl = '/boomcms/page/';
 
 	boomPage.prototype.add = function() {
 		var promise = new $.Deferred(),
@@ -39639,17 +39639,17 @@ function boomPage(page_id) {
 	getUrl: function(section) {
 		switch (section) {
 			case 'urls':
-				return '/cms/page/urls/' + this.page.id;
+				return '/boomcms/page/urls/' + this.page.id;
 			case 'relations':
-				return '/cms/page/relations/view/' + this.page.id;
+				return '/boomcms/page/relations/view/' + this.page.id;
 			case 'tags':
-				return '/cms/page/tags/list/' + this.page.id;
+				return '/boomcms/page/tags/list/' + this.page.id;
 			case 'template':
-				return '/cms/page/version/template/' + this.page.id;
+				return '/boomcms/page/version/template/' + this.page.id;
 			case 'drafts':
-				return '/cms/page/version/status/' + this.page.id;
+				return '/boomcms/page/version/status/' + this.page.id;
 			default:
-				return '/cms/page/settings/' + section + '/' + this.page.id;
+				return '/boomcms/page/settings/' + section + '/' + this.page.id;
 		}
 	},
 
@@ -40097,7 +40097,7 @@ $.widget('boom.pageTree', {
 	getChildren : function(pageId, $ul) {
 		var pageTree = this;
 
-		$.get('/cms/search/pages', {parent: pageId})
+		$.get('/boomcms/search/pages', {parent: pageId})
 			.done(function(data) {
 
 				$(data).each(function(i, item) {
@@ -40220,7 +40220,7 @@ $.widget('boom.pageTree', {
 		this._trigger('update', null, {tags : this.tags});
 	}
 });;$.widget('boom.pageTagAutocomplete', $.boom.tagAutocomplete,  {
-	url : '/cms/autocomplete/page-tags',
+	url : '/boomcms/autocomplete/page-tags',
 
 	tagSelected : function(tag) {
 		if (typeof(tag) === 'object') {
@@ -40246,7 +40246,7 @@ $.widget('boom.pageTree', {
 			dialog;
 
 		dialog = new boomDialog({
-			url : '/cms/page/urls/add?page_id=' + page_id,
+			url : '/boomcms/page/urls/add?page_id=' + page_id,
 			title : 'Add URL',
 			closeButton: false,
 			saveButton: true,
@@ -40266,7 +40266,7 @@ $.widget('boom.pageTree', {
 	boomPageUrl.prototype.addWithLocation = function(page_id, location) {
 		var deferred = new $.Deferred();
 
-		$.post('/cms/page/urls/add?page_id=' + page_id, {location : location})
+		$.post('/boomcms/page/urls/add?page_id=' + page_id, {location : location})
 			.done(function(response) {
 				if (response) {
 					if (typeof response.existing_url_id !== 'undefined') {
@@ -40291,7 +40291,7 @@ $.widget('boom.pageTree', {
 
 			confirmation
 			.done(function() {
-				$.post('/cms/page/urls/delete/' + url.id)
+				$.post('/boomcms/page/urls/delete/' + url.id)
 				.done(function() {
 					deferred.resolve();
 				});
@@ -40301,13 +40301,13 @@ $.widget('boom.pageTree', {
 	};
 
 	boomPageUrl.prototype.makePrimary = function(is_primary) {
-		return $.post('/cms/page/urls/make_primary/' + this.id);
+		return $.post('/boomcms/page/urls/make_primary/' + this.id);
 	};
 
 	boomPageUrl.prototype.move = function(page_id) {
 		var deferred = new $.Deferred(),
 			move_dialog,
-			form_url = '/cms/page/urls/move/' + this.id + '?page_id=' + page_id,
+			form_url = '/boomcms/page/urls/move/' + this.id + '?page_id=' + page_id,
 			dialog;
 
 		dialog = new boomDialog({
@@ -40341,7 +40341,7 @@ $.widget('boom.pageTree', {
 			.on('click', '#b-page-settings-children-reorder', function(e) {
 				e.preventDefault();
 		
-				$.get('/cms/search/pages', {parent: page.id})
+				$.get('/boomcms/search/pages', {parent: page.id})
 					.done(function(pages) {
 						var sortDialog = new boomDialog({
 							msg: "<div></div>",
@@ -40397,7 +40397,7 @@ $.widget('boom.pageTree', {
 
 	_create: function() {
 		this.$reorderButton = this.element.find('#b-page-settings-children-reorder');
-		this.sortUrl = '/cms/page/settings/sort_children/' + this.options.page.id;
+		this.sortUrl = '/boomcms/page/settings/sort_children/' + this.options.page.id;
 
 		this.bind();
 	}
@@ -40774,7 +40774,7 @@ $.widget('boom.pageTree', {
 	getRelatedPages: function() {
 		var $element = this.element;
 
-		$.get('/cms/search/pages', {relatedTo: this.page.id})
+		$.get('/boomcms/search/pages', {relatedTo: this.page.id})
 			.done(function(pages) {
 				var $ul = $element.find('ul');
 
@@ -40811,7 +40811,7 @@ $.widget('boom.pageTree', {
 			});
 	}
 });;$.widget('boom.pageSettingsTags', {
-	baseUrl: '/cms/page/tags/',
+	baseUrl: '/boomcms/page/tags/',
 
 	addTag: function(group, tag) {
 		var tagEditor = this;
@@ -40944,7 +40944,7 @@ $.widget('boom.pageTree', {
 		$count.find('p').html($selected.data('count'));
 	}
 });;$.widget('boom.pageSettingsUrls', {
-	baseUrl: '/cms/page/urls/',
+	baseUrl: '/boomcms/page/urls/',
 
 	add: function() {
 		var url = new boomPageUrl(),
@@ -41022,7 +41022,7 @@ $.widget('boom.pageTree', {
 	}
 });;$.widget('boom.pageSettingsVisibility', {
 	changed: false,
-	baseUrl: '/cms/page/settings/visibility/',
+	baseUrl: '/boomcms/page/settings/visibility/',
 
 	bind: function() {
 		var pageVisibilityEditor = this;
@@ -41380,7 +41380,7 @@ $.widget('boom.textEditor', {
 	this.page_id = page_id;
 	this.slotname = slotname;
 	this.type = type;
-	this.urlPrefix = '/cms/chunk/' + this.page_id + '/';
+	this.urlPrefix = '/boomcms/chunk/' + this.page_id + '/';
 
 	/**
 	 * To remove a chunk save it with no data.
@@ -41917,7 +41917,7 @@ $.widget('ui.chunkTimestamp', $.ui.chunk,
 		var data = this.getData();
 
 		this.dialog = new boomDialog({
-			url: '/cms/chunk/' + this.options.currentPage.id + '/edit?slotname=' + self.options.name + '&type=timestamp',
+			url: '/boomcms/chunk/' + this.options.currentPage.id + '/edit?slotname=' + self.options.name + '&type=timestamp',
 			width: 400,
 			title: 'Edit date / time',
 			closeButton: false,
@@ -41980,7 +41980,7 @@ $.widget('ui.chunkTimestamp', $.ui.chunk,
 		var library = this;
 
 		this.dialog = new boomDialog({
-			url: '/cms/chunk/' + this.options.currentPage.id + '/edit?type=library&slotname=' + this.options.name,
+			url: '/boomcms/chunk/' + this.options.currentPage.id + '/edit?type=library&slotname=' + this.options.name,
 			width: 700,
 			closeButton: false,
 			saveButton: true,
@@ -42193,7 +42193,7 @@ $.widget('ui.chunkTimestamp', $.ui.chunk,
 		this.deferred = new $.Deferred();
 
 		this.dialog = new boomDialog({
-			url : '/cms/chunk/' + this.page_id + '/edit?slotname=' + this.slotname + '&type=slideshow',
+			url : '/boomcms/chunk/' + this.page_id + '/edit?slotname=' + this.slotname + '&type=slideshow',
 			id : 'b-slideshow-editor',
 			width: 920,
 			closeButton: false,
@@ -42381,7 +42381,7 @@ $.widget('ui.chunkTimestamp', $.ui.chunk,
 		var linksetEditor = this;
 
 		this.dialog = new boomDialog({
-			url: '/cms/chunk/' + this.pageId + '/edit?slotname=' + this.slotname + '&type=linkset',
+			url: '/boomcms/chunk/' + this.pageId + '/edit?slotname=' + this.slotname + '&type=linkset',
 			title: 'Edit linkset',
 			id: 'b-linkset-editor',
 			width: 900,
@@ -42474,7 +42474,7 @@ $.widget('ui.chunkTimestamp', $.ui.chunk,
 		this.deferred = new $.Deferred();
 
 		this.dialog = new boomDialog({
-			url : '/cms/chunk/' + this.pageId + '/edit?slotname=' + this.slotname + '&type=asset',
+			url : '/boomcms/chunk/' + this.pageId + '/edit?slotname=' + this.slotname + '&type=asset',
 			id : 'b-assets-chunk-editor',
 			width: 900,
 			closeButton: false,
@@ -42716,7 +42716,7 @@ $.widget('ui.chunkPageVisibility', {
 		var locationEditor = this;
 
 		this.dialog = new boomDialog({
-			url : '/cms/chunk/' + this.page_id + '/edit?slotname=' + this.slotname + '&type=location',
+			url : '/boomcms/chunk/' + this.page_id + '/edit?slotname=' + this.slotname + '&type=location',
 			id : 'b-location-editor',
 			width: 920,
 			closeButton: false,
@@ -42781,7 +42781,7 @@ $.widget('ui.chunkPageVisibility', {
 			dialog;
 			
 		dialog = new boomDialog({
-			url: '/cms/chunk/' + this.options.currentPage.id + '/edit?type=html&slotname=' + this.options.name,
+			url: '/boomcms/chunk/' + this.options.currentPage.id + '/edit?type=html&slotname=' + this.options.name,
 			width: 600,
 			title: 'Edit HTML',
 			closeButton: false,
@@ -43095,7 +43095,7 @@ $.widget('ui.chunkPageVisibility', {
 				if (linkPicker.externalTypeSelector.val('http') || linkPicker.externalTypeSelector.val('https')) {
 					if (linkPicker.externalUrl.val()) {
 						$.ajax({
-							url: '/cms/autocomplete/page-titles',
+							url: '/boomcms/autocomplete/page-titles',
 							dataType: 'json',
 							data: {
 								text : linkPicker.externalUrl.val()
@@ -43314,7 +43314,7 @@ $.widget('ui.chunkPageVisibility', {
 
 				confirmation
 					.done(function() {
-						$.post('/cms/templates/delete/' + item.attr('data-id'))
+						$.post('/boomcms/templates/delete/' + item.attr('data-id'))
 							.done(function() {
 								item.fadeOut(600, function(){
 									item.remove();
@@ -43325,7 +43325,7 @@ $.widget('ui.chunkPageVisibility', {
 			.on('click', '#b-templates-save', function() {
 				var data = $('#b-templates').serialize();
 
-				$.post('/cms/templates/save', data, function(){
+				$.post('/boomcms/templates/save', data, function(){
 					new boomNotification('Templates successfully saved.');
 				});
 			})
@@ -43455,7 +43455,7 @@ $.widget('ui.chunkPageVisibility', {
 
         this.dialog = new boomDialog({
 			title : 'Edit Asset',
-			url : '/cms/assets/view/' + assetEditor.asset.id,
+			url : '/boomcms/assets/view/' + assetEditor.asset.id,
 			width: document.documentElement.clientWidth >= 1000? '1000px' : '100%',
 			closeButton: false,
 			onLoad : function() {
@@ -43491,7 +43491,7 @@ $.widget('ui.chunkPageVisibility', {
 
 		$.ajax({
 			data: data,
-			url: '/cms/assets/replace/' + asset.getId(),
+			url: '/boomcms/assets/replace/' + asset.getId(),
 			processData: false,
 			contentType: false,
 			type: 'POST'
@@ -43514,8 +43514,8 @@ $.widget('ui.chunkPageVisibility', {
     return this.open();
 };
 ;$.widget('boom.assetManager', {
-	baseUrl: '/cms/assets/',
-	listUrl: '/cms/assets/get',
+	baseUrl: '/boomcms/assets/',
+	listUrl: '/boomcms/assets/get',
 
 	postData: {
 		page: 1,
@@ -43782,8 +43782,8 @@ $.widget('ui.chunkPageVisibility', {
 	this.document = $(document);
 	this.filters = filters? filters : {};
 
-	boomAssetPicker.prototype.url = '/cms/assets/picker';
-	boomAssetPicker.prototype.listUrl = '/cms/assets/get';
+	boomAssetPicker.prototype.url = '/boomcms/assets/picker';
+	boomAssetPicker.prototype.listUrl = '/boomcms/assets/get';
 
 	boomAssetPicker.prototype.addFilter = function(type, value) {
 		this.filters.page = 1;
@@ -44010,7 +44010,7 @@ $.widget('ui.chunkPageVisibility', {
 
 		this.options.source = function(request, response) {
 			$.ajax({
-				url: '/cms/autocomplete/assets',
+				url: '/boomcms/autocomplete/assets',
 				dataType: 'json',
 				data: {
 					text : element.val()
@@ -44038,9 +44038,9 @@ $.widget('ui.chunkPageVisibility', {
 	uploaderOptions: {
 		/**
 		@type string
-		@default '/cms/assets/upload'
+		@default '/boomcms/assets/upload'
 		*/
-		url: '/cms/assets/upload',
+		url: '/boomcms/assets/upload',
 
 		/**
 		@type string
@@ -44132,7 +44132,7 @@ $.widget('ui.chunkPageVisibility', {
 	 */
 	replacesAsset: function(asset) {
 		this.uploadForm.fileupload('option', {
-			url: '/cms/assets/replace/' + asset.id,
+			url: '/boomcms/assets/replace/' + asset.id,
 			singleFileUploads: true
 		});
 	},
@@ -44352,7 +44352,7 @@ function Row() {
 		return ($el.offset.top >= (this.elements[this.elements.length - 1].offset.top + $el.height()));
 	};
 };$.widget('boom.assetTagAutocomplete', $.boom.tagAutocomplete,  {
-	url : '/cms/autocomplete/asset-tags',
+	url : '/boomcms/autocomplete/asset-tags',
 
 	tagSelected : function(tag) {
 		if (typeof(tag) === 'object') {
@@ -44425,7 +44425,7 @@ function Row() {
 });;function boomAssetSelection(assetIds) {
 	this.assets = typeof(assetIds) === 'object' ? assetIds : [];
 
-	boomAssetSelection.prototype.baseUrl = '/cms/assets/';
+	boomAssetSelection.prototype.baseUrl = '/boomcms/assets/';
 
 	boomAssetSelection.prototype.add = function(assetId) {
 		var index = this.assets.indexOf(assetId);
@@ -44551,7 +44551,7 @@ function Row() {
 };;function boomGroup(group_id) {
 	this.id = group_id;
 
-	boomGroup.prototype.base_url = '/cms/group/';
+	boomGroup.prototype.base_url = '/boomcms/group/';
 
 	boomGroup.prototype.add = function() {
 		var group = this,
@@ -44652,7 +44652,7 @@ function Row() {
 
 		/**
 		 * Clicking on a page in the tree.
-		 * Should make a GET call to /cms/groups/list_roles/<group ID>?page_id=<page ID>
+		 * Should make a GET call to /boomcms/groups/list_roles/<group ID>?page_id=<page ID>
 		 *
 		 * This will return a json encoded array of role ID => <value>
 		 * Possible values are 1 if the role is allowed and 0 if the role is disallowed.
@@ -44723,7 +44723,7 @@ function Row() {
 			});
 	}
 });;$.widget('boom.peopleManager', {
-	homeUrl : '/cms/people',
+	homeUrl : '/boomcms/people',
 	selectedPeople : 0,
 
 	bind : function() {
@@ -44955,7 +44955,7 @@ function Row() {
 	this.imageUrl = imageUrl;
 	this.imageSelector = '#b-imageeditor-image';
 	this.cropButtonSelector = '#b-imageeditor-crop';
-	this.url = '/cms/ui/image-editor';
+	this.url = '/boomcms/ui/image-editor';
 	this.deferred = new $.Deferred();
 	this.isCropping = false;
 	
@@ -64890,7 +64890,7 @@ if (!console) {
 		$settings
 			.addClass('b-settings-container')
 			.appendTo($('#b-pages'))
-			.load('/cms/page/settings/index/' + page.id, function() {
+			.load('/boomcms/page/settings/index/' + page.id, function() {
 				$settings
 					.addClass('open')
 					.pageSettings({
@@ -64911,7 +64911,7 @@ if (!console) {
 		$el
 			.addClass('b-settings-container')
 			.appendTo($('#b-pages'))
-			.load('/cms/page/settings/index/' + page.id, function() {
+			.load('/boomcms/page/settings/index/' + page.id, function() {
 				$el
 					.addClass('open')
 					.pageSettings({

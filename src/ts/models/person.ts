@@ -1,8 +1,8 @@
-import {Dialog} from '../feedback/dialog';
-import {Confirmation} from '../feedback/confirmation';
+import {Dialog} from '../ui/dialog';
+import {Confirmation} from '../ui/confirmation';
 
 export class Person {
-	private baseUrl: string = '/cms/person';
+	private baseUrl: string = '/boomcms/person';
 
 	constructor(private id: number) {
 		this.id = id;

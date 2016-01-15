@@ -1,10 +1,10 @@
 import {Asset} from './asset';
-import {Confirmation} from '../feedback/confirmation';
-import {Dialog} from '../feedback/dialog';
-import {Notification} from '../feedback/notification';
+import {Confirmation} from '../ui/confirmation';
+import {Dialog} from '../ui/dialog';
+import {Notification} from '../ui/notification';
 
 export class Page {
-	private baseUrl: string = '/cms/page/';
+	private baseUrl: string = '/boomcms/page/';
 
 	constructor(private id: number) {
 		this.id = id;
