@@ -2,7 +2,7 @@
 
 namespace BoomCMS\Http\Controllers\People;
 
-use BoomCMS\Database\Models\Group;
+use BoomCMS\Database\Models\Group as GroupModel;
 use BoomCMS\Database\Models\Person as PersonModel;
 use BoomCMS\Jobs\CreatePerson;
 use BoomCMS\Support\Facades\Group as GroupFacade;
@@ -18,12 +18,10 @@ class Person extends PeopleManager
 
     public function addGroups(Request $request, PersonModel $person)
     {
-        foreach ($request->input('groups') as $groupId) {
-            $group = GroupFacade::find($groupId);
+        $groups = GroupFacade::find($request->input('groups'));
 
-            if ($group) {
-                $person->addGroup($group);
-            }
+        foreach ($groups as $group) {
+            $person->addGroup($group);
         }
     }
 
@@ -47,7 +45,7 @@ class Person extends PeopleManager
         PersonFacade::deleteByIds($request->input('people'));
     }
 
-    public function removeGroup(PersonModel $person, Group $group)
+    public function removeGroup(PersonModel $person, GroupModel $group)
     {
         $person->removeGroup($group);
     }
@@ -76,14 +74,12 @@ class Person extends PeopleManager
 
     public function update(Request $request, PersonModel $person)
     {
-        $superuser = $request->input('superuser');
-
         $person
             ->setName($request->input('name'))
-            ->setEnabled($request->input('enabled') == 1);
+            ->setEnabled($request->has('enabled'));
 
-        if ($superuser !== null && Auth::check('editSuperuser', $person)) {
-            $person->setSuperuser($superuser == 1);
+        if ($request->input('superuser') && Auth::check('editSuperuser', $person)) {
+            $person->setSuperuser($request->has('superuser'));
         }
 
         PersonFacade::save($person);
