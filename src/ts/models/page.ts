@@ -15,29 +15,7 @@ export class Page {
 			page_id = this.id;
 
 		$.post(this.baseUrl + 'add/' + page_id, function(response) {
-			if (response.prompt) {
-				var dialog = new boomDialog({
-					msg: response.prompt,
-					cancelButton: false,
-					closeButton: false,
-					onLoad: function() {
-						dialog.contents.on('click', 'button', function() {
-							var parentId = $(this).attr('data-parent'),
-								parent = parentId === this.id ? this : new boomPage(parentId);
-
-							if (!parentId) {
-								dialog.cancel();
-							} else {
-								parent.addWithoutPrompt()
-									.done(function(response) {
-										promise.resolve(response);
-									});
-										
-							}
-						});
-					}
-				});
-			} else if (response.url) {
+			if (response.url) {
 				promise.resolve(response);
 			} else {
 				promise.reject(response);
